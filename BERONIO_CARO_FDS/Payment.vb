@@ -60,7 +60,6 @@ Public Class Payment
         dgvOrder.Columns.Add("colQty", "Qty")
         dgvOrder.Columns.Add("colPrice", "Unit Price")
         dgvOrder.Columns.Add("colTotal", "Total")
-        dgvOrder.Columns("colName").Width = 150
 
         dgvOrder.Columns("colProductId").Visible = False
     End Sub
@@ -93,7 +92,7 @@ Public Class Payment
         Dim discount As Decimal = 0
 
         If isDiscounted Then
-            discount = subtotal * 0.2  ' 20% discount for PWD/Senior
+            discount = subtotal * 0.2
         End If
 
         Dim total As Decimal = subtotal + vat - discount
@@ -108,7 +107,7 @@ Public Class Payment
     End Sub
 
     '==================================================
-    ' CASH INPUT BUTTONS (7 8 9 / 4 5 6 / 1 2 3 / 0 00)
+    ' CASH INPUT BUTTONS
     '==================================================
     Private Sub AppendCash(value As String)
         If amoTendered.Text = "0" Then
@@ -156,7 +155,7 @@ Public Class Payment
         AppendCash("00")
     End Sub
 
-    ' Backspace button
+    ' Backspace
     Private Sub Button6_Click(sender As Object, e As EventArgs) Handles Button6.Click
         If amoTendered.Text.Length > 1 Then
             amoTendered.Text = amoTendered.Text.Substring(0, amoTendered.Text.Length - 1)
@@ -166,41 +165,34 @@ Public Class Payment
         UpdateTotals()
     End Sub
 
-    ' Clear cash button
+    ' Clear
     Private Sub Button20_Click(sender As Object, e As EventArgs) Handles Button20.Click
         amoTendered.Text = "0"
         UpdateTotals()
     End Sub
 
     '==================================================
-    ' CASH TEXTBOX — update totals when typed manually
+    ' CASH TEXTBOX
     '==================================================
     Private Sub amoTendered_TextChanged(sender As Object, e As EventArgs) Handles amoTendered.TextChanged
         UpdateTotals()
     End Sub
 
     '==================================================
-    ' PWD / SENIOR DISCOUNT TOGGLE (Button18)
+    ' PWD / SENIOR DISCOUNT TOGGLE
     '==================================================
     Private Sub Button18_Click(sender As Object, e As EventArgs) Handles Button18.Click
         If Not isDiscounted Then
-            ' Ask which type
-            Dim result = MessageBox.Show(
-                "Select discount type:" & vbNewLine &
-                "Yes = Senior Citizen" & vbNewLine &
-                "No = PWD",
-                "Discount Type", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
-
             isDiscounted = True
-            discountType = If(result = DialogResult.Yes, "Senior Citizen", "PWD")
+            discountType = "PWD/Senior"
             Button18.Text = "REMOVE DISCOUNT"
             Panel1.BackColor = Color.Green
         Else
-            Panel1.BackColor = Color.Red
             isDiscounted = False
             discountType = "None"
             Button18.Text = "PWD / SENIOR"
             Button18.BackColor = Color.Orange
+            Panel1.BackColor = Color.Red
         End If
 
         UpdateTotals()
@@ -223,7 +215,7 @@ Public Class Payment
 
         If Not Decimal.TryParse(amoTendered.Text, cash) OrElse cash < total Then
             MessageBox.Show("Insufficient cash amount.", "Payment Error",
-                            MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Return
         End If
 
@@ -232,26 +224,23 @@ Public Class Payment
             Dim transaction As MySqlTransaction = conn.BeginTransaction()
 
             Try
-                ' Save to orders table
                 Dim orderCmd As New MySqlCommand(
-                    "INSERT INTO orders (user_id, subtotal, vat_amount, discount_type, discount_amount, total_amount)
-                     VALUES (@uid, @sub, @vat, @dtype, @disc, @total)", conn, transaction)
+                "INSERT INTO orders (user_id, subtotal, vat_amount, discount_amount, total_amount)
+                 VALUES (@uid, @sub, @vat, @disc, @total)", conn, transaction)
 
                 orderCmd.Parameters.AddWithValue("@uid", LoggedInUserId)
                 orderCmd.Parameters.AddWithValue("@sub", subtotal)
                 orderCmd.Parameters.AddWithValue("@vat", vat)
-                orderCmd.Parameters.AddWithValue("@dtype", discountType)
                 orderCmd.Parameters.AddWithValue("@disc", discount)
                 orderCmd.Parameters.AddWithValue("@total", total)
                 orderCmd.ExecuteNonQuery()
 
                 Dim newOrderId As Integer = orderCmd.LastInsertedId
 
-                ' Save each item to order_items + deduct stock
                 For Each item As CartItem In CartItems
                     Dim itemCmd As New MySqlCommand(
-                        "INSERT INTO order_items (order_id, product_id, quantity, price_at_sale)
-                         VALUES (@oid, @pid, @qty, @price)", conn, transaction)
+                    "INSERT INTO order_items (order_id, product_id, quantity, price_at_sale)
+                     VALUES (@oid, @pid, @qty, @price)", conn, transaction)
 
                     itemCmd.Parameters.AddWithValue("@oid", newOrderId)
                     itemCmd.Parameters.AddWithValue("@pid", item.ProductId)
@@ -259,10 +248,9 @@ Public Class Payment
                     itemCmd.Parameters.AddWithValue("@price", item.UnitPrice)
                     itemCmd.ExecuteNonQuery()
 
-                    ' Deduct stock
                     Dim stockCmd As New MySqlCommand(
-                        "UPDATE products SET stock_quantity = stock_quantity - @qty
-                         WHERE product_id = @pid", conn, transaction)
+                    "UPDATE products SET stock_quantity = stock_quantity - @qty
+                     WHERE product_id = @pid", conn, transaction)
                     stockCmd.Parameters.AddWithValue("@qty", item.Quantity)
                     stockCmd.Parameters.AddWithValue("@pid", item.ProductId)
                     stockCmd.ExecuteNonQuery()
@@ -270,22 +258,19 @@ Public Class Payment
 
                 transaction.Commit()
 
-                ' Pass order info to receipt form
-                Receipt.OrderId = newOrderId
-                Receipt.CashAmount = cash
-                Receipt.ChangeAmount = cash - total
+                receipt.OrderId = newOrderId
+                receipt.CashAmount = cash
+                receipt.ChangeAmount = cash - total
 
-                ' Clear cart
                 CartItems.Clear()
 
-                ' Show receipt
                 Me.Hide()
-                Receipt.Show()
+                receipt.Show()
 
             Catch ex As Exception
                 transaction.Rollback()
                 MessageBox.Show("Transaction failed: " & ex.Message, "Error",
-                                MessageBoxButtons.OK, MessageBoxIcon.Error)
+                            MessageBoxButtons.OK, MessageBoxIcon.Error)
             End Try
 
         Finally

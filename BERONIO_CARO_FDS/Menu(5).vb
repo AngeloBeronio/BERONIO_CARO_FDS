@@ -41,8 +41,6 @@ Public Class Menu_5_
 
     Private Sub Timer1_Tick(sender As Object, e As EventArgs) Handles Timer1.Tick
         Label2.Text = DateTime.Now.ToString("hh:mm tt")
-
-        ' Update greeting in case it changes (e.g. hits noon while app is open)
         Label1.Text = GetGreeting()
     End Sub
 
@@ -148,8 +146,6 @@ Public Class Menu_5_
         End If
 
         AddToCart(selectedProductId, selectedProductName, selectedPrice, NumericUpDown1.Value)
-
-        ' Reset
         NumericUpDown1.Value = 1
     End Sub
 

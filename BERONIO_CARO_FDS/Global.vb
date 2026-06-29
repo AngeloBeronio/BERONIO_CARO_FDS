@@ -1,7 +1,7 @@
 ﻿Imports MySql.Data.MySqlClient
 Imports System.IO
 
-Module connection
+Module [Global]
     Public conn As MySqlConnection
     Public connStr As String = "Server=localhost;Database=pan_de_masa_db;Uid=root;Pwd=;"
     Public LoggedInUserId As Integer

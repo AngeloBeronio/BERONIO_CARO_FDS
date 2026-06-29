@@ -53,7 +53,7 @@ Public Class Cart
     '==================================================
     Private Sub SetupCartGrid()
         cartMenu.Columns.Clear()
-        cartMenu.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
+        cartMenu.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None
         cartMenu.SelectionMode = DataGridViewSelectionMode.FullRowSelect
         cartMenu.MultiSelect = False
         cartMenu.ReadOnly = True
@@ -67,6 +67,10 @@ Public Class Cart
         cartMenu.Columns.Add("colTotal", "Total")
 
         cartMenu.Columns("colProductId").Visible = False
+        cartMenu.Columns("colName").Width = 685
+        cartMenu.Columns("colQty").Width = 150
+        cartMenu.Columns("colPrice").Width = 200
+        cartMenu.Columns("colTotal").Width = 200
     End Sub
 
     '==================================================
@@ -90,7 +94,7 @@ Public Class Cart
     End Sub
 
     '==================================================
-    ' ROW CLICK — LOAD QTY INTO NUMERICUPDOWN
+    ' ROW CLICK 
     '==================================================
     Private Sub cartMenu_CellClick(sender As Object, e As DataGridViewCellEventArgs) Handles cartMenu.CellClick
         If e.RowIndex < 0 Then Return
@@ -98,7 +102,7 @@ Public Class Cart
     End Sub
 
     '==================================================
-    ' NUMERICUPDOWN — UPDATE QTY OR REMOVE IF SET TO 0
+    ' NUMERICUPDOWN
     '==================================================
     Private Sub NumericUpDown1_ValueChanged(sender As Object, e As EventArgs) Handles NumericUpDown1.ValueChanged
         If cartMenu.SelectedRows.Count = 0 Then Return
@@ -107,7 +111,6 @@ Public Class Cart
         Dim pid As Integer = CInt(selectedRow.Cells("colProductId").Value)
         Dim itemName As String = selectedRow.Cells("colName").Value.ToString()
 
-        ' If set to 0 — ask to remove
         If NumericUpDown1.Value = 0 Then
             Dim confirm As DialogResult = MessageBox.Show(
                 "Remove " & itemName & " from cart?", "Remove Item",
@@ -118,7 +121,6 @@ Public Class Cart
                 If toRemove IsNot Nothing Then CartItems.Remove(toRemove)
                 LoadCartItems()
             Else
-                ' Restore previous quantity if they say No
                 Dim existing As CartItem = CartItems.FirstOrDefault(Function(c) c.ProductId = pid)
                 If existing IsNot Nothing Then
                     NumericUpDown1.Value = existing.Quantity
@@ -127,7 +129,6 @@ Public Class Cart
             Return
         End If
 
-        ' Otherwise update quantity normally
         Dim item As CartItem = CartItems.FirstOrDefault(Function(c) c.ProductId = pid)
         If item IsNot Nothing Then
             item.Quantity = NumericUpDown1.Value
