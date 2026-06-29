@@ -314,7 +314,7 @@ Partial Class Admin_Inv
 		' 
 		' Button4
 		' 
-		Button4.Location = New Point(822, 31)
+		Button4.Location = New Point(1088, 30)
 		Button4.Name = "Button4"
 		Button4.Size = New Size(87, 79)
 		Button4.TabIndex = 11

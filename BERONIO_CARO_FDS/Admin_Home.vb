@@ -11,4 +11,8 @@
 		Me.Hide()
 		Admin_InvLogs.Show()
 	End Sub
+
+	Private Sub Admin_Homevb_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+
+	End Sub
 End Class
