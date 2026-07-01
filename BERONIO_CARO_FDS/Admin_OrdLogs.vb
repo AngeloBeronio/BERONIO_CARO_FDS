@@ -11,4 +11,9 @@
 		Me.Hide()
 		Admin_InvLogs.Show()
 	End Sub
+
+	Private Sub Button7_Click(sender As Object, e As EventArgs) Handles Button7.Click
+		Me.Hide()
+		Admin_GrossProfit.Show()
+	End Sub
 End Class

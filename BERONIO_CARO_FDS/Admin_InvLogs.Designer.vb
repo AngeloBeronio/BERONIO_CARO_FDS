@@ -31,6 +31,7 @@ Partial Class Admin_InvLogs
 		Button5 = New Button()
 		Button6 = New Button()
 		TextBox2 = New TextBox()
+		Button4 = New Button()
 		CType(DataGridView1, ComponentModel.ISupportInitialize).BeginInit()
 		SuspendLayout()
 		' 
@@ -127,12 +128,29 @@ Partial Class Admin_InvLogs
 		TextBox2.Size = New Size(232, 23)
 		TextBox2.TabIndex = 19
 		' 
+		' Button4
+		' 
+		Button4.BackColor = Color.Transparent
+		Button4.Cursor = Cursors.Hand
+		Button4.FlatAppearance.BorderColor = Color.White
+		Button4.FlatAppearance.BorderSize = 0
+		Button4.FlatStyle = FlatStyle.Flat
+		Button4.Font = New Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+		Button4.Location = New Point(116, 620)
+		Button4.Name = "Button4"
+		Button4.Size = New Size(196, 60)
+		Button4.TabIndex = 20
+		Button4.Text = "GROSS PROFIT"
+		Button4.TextAlign = ContentAlignment.MiddleLeft
+		Button4.UseVisualStyleBackColor = False
+		' 
 		' Admin_InvLogs
 		' 
 		AutoScaleDimensions = New SizeF(7F, 15F)
 		AutoScaleMode = AutoScaleMode.Font
 		BackgroundImage = CType(resources.GetObject("$this.BackgroundImage"), Image)
 		ClientSize = New Size(1904, 1041)
+		Controls.Add(Button4)
 		Controls.Add(TextBox2)
 		Controls.Add(Button3)
 		Controls.Add(Button5)
@@ -156,4 +174,5 @@ Partial Class Admin_InvLogs
 	Friend WithEvents Button5 As Button
 	Friend WithEvents Button6 As Button
 	Friend WithEvents TextBox2 As TextBox
+	Friend WithEvents Button4 As Button
 End Class
